@@ -11,7 +11,9 @@ mywebsite/
             ├── login.html                     # 登录页面
             └── main.html                      # 主页
 
-
+在wsl中执行以下命令启动系统，默认账号密码admin:123456
+mvn -U clean spring-boot:run
+地址：http://localhost:8080
 
 pom.xml
 作用： 告诉 Maven 需要下载哪些库
