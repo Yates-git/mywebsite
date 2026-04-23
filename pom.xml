@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    pom.xml - 项目依赖配置文件
+    Maven 根据这个文件自动下载所需的 Java 库
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 项目基本信息 -->
+    <groupId>com.example</groupId>
+    <artifactId>mywebsite</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>mywebsite</name>
+    <description>简单的登录网站示例</description>
+
+    <!-- Spring Boot 父项目 - 继承后自动获得 Spring Boot 的所有功能 -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.0</version>
+    </parent>
+
+    <!-- Java 版本 -->
+    <properties>
+        <java.version>21</java.version>
+        <maven.compiler.release>21</maven.compiler.release>
+    </properties>
+
+    <!-- 项目依赖 - 告诉 Maven 需要哪些库 -->
+    <dependencies>
+        <!--
+            Spring Boot Web - 提供网站开发的核心功能
+            包括: 控制器、模板引擎、会话管理等
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            Thymeleaf - 模板引擎
+            作用: 把 Java 数据填充到 HTML 页面中
+            例如: 在 HTML 里写 ${username}，Thymeleaf 会替换成真实的用户名
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!--
+            Spring Session - 会话管理
+            作用: 记录用户的登录状态
+            比如登录后，用户信息会存在 session 里
+        -->
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <!-- Maven 打包插件 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
