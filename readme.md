@@ -15,6 +15,8 @@ mywebsite/
 mvn -U clean spring-boot:run
 地址：http://localhost:8080
 
+
+
 pom.xml
 作用： 告诉 Maven 需要下载哪些库
 <dependency>...spring-boot-starter-web</dependency>  <!-- 网站核心功能 -->
