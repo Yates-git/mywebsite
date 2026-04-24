@@ -1,3 +1,5 @@
+com/example/mywebsite/UserRepository.class
 com/example/mywebsite/MywebsiteApplication.class
-com/example/mywebsite/User.class
 com/example/mywebsite/UserController.class
+com/example/mywebsite/DataInitializer.class
+com/example/mywebsite/User.class

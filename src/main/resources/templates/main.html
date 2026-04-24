@@ -45,6 +45,28 @@
             gap: 15px;
         }
 
+        .navbar .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .navbar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar .nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .navbar .username {
             font-size: 14px;
         }
@@ -131,6 +153,12 @@
     <!-- 顶部导航栏 -->
     <nav class="navbar">
         <div class="logo">📚 门户网站</div>
+        <div class="nav-links">
+            <!-- 首页链接 -->
+            <a th:href="@{/main}" class="nav-link" th:classappend="${#strings.equals(currentUri, '/main') or #strings.equals(currentUri, '/')} ? 'active' : ''">首页</a>
+            <!-- 后台管理链接 - 仅管理员可见 -->
+            <a th:if="${isAdmin}" th:href="@{/admin/users}" class="nav-link" th:classappend="${#strings.startsWith(currentUri, '/admin')} ? 'active' : ''">后台管理</a>
+        </div>
         <div class="user-info">
             <!--
                 显示登录用户名

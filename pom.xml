@@ -61,6 +61,59 @@
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-core</artifactId>
         </dependency>
+
+        <!--
+            Spring Data JPA - 数据库持久化框架
+            作用: 简化数据库操作，自动生成 SQL
+            配合 Hibernate 使用
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            Spring JDBC - JDBC 模板
+            作用: 简化 JDBC 操作
+            JPA 依赖这个
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+
+        <!--
+            SQLite JDBC 驱动
+            作用: 让 Java 可以连接 SQLite 数据库
+        -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.45.1.0</version>
+        </dependency>
+
+        <!--
+            Hibernate Community Dialects - SQLite 方言支持
+            作用: Hibernate 6.x 将 SQLite 方言拆分到 community 模块
+                  这个模块提供了 org.hibernate.community.dialect.SQLiteDialect
+                  告诉 Hibernate 如何生成 SQLite 兼容的 SQL 语句
+            为什么需要: 没有这个，Hibernate 无法识别 SQLite 数据库
+        -->
+        <dependency>
+            <groupId>org.hibernate.orm</groupId>
+            <artifactId>hibernate-community-dialects</artifactId>
+            <version>6.5.2.Final</version>
+        </dependency>
+
+        <!--
+            SQLite Spring Boot Starter
+            作用: 自动配置 SQLite 数据源
+        -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>3.0.3</version>
+        </dependency>
     </dependencies>
 
     <!-- Maven 打包插件 -->

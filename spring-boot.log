@@ -17,7 +17,7 @@ nohup: ignoring input
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mcompiler:3.13.0:compile[m [1m(default-compile)[m @ [36mmywebsite[0;1m ---[m
 [[1;34mINFO[m] Recompiling the module because of [1mchanged source code[m.
-[[1;34mINFO[m] Compiling 3 source files with javac [debug parameters release 21] to target/classes
+[[1;34mINFO[m] Compiling 5 source files with javac [debug parameters release 21] to target/classes
 [[1;34mINFO[m] 
 [[1;34mINFO[m] [1m--- [0;32mresources:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmywebsite[0;1m ---[m
 [[1;34mINFO[m] skip non existing resourceDirectory /home/dev/mywebsite/src/test/resources
@@ -39,15 +39,54 @@ nohup: ignoring input
 
  :: Spring Boot ::                (v3.3.0)
 
-2026-04-24T13:58:03.735+08:00  INFO 20865 --- [           main] c.e.mywebsite.MywebsiteApplication       : Starting MywebsiteApplication using Java 21.0.10 with PID 20865 (/home/dev/mywebsite/target/classes started by dev in /home/dev/mywebsite)
-2026-04-24T13:58:03.737+08:00  INFO 20865 --- [           main] c.e.mywebsite.MywebsiteApplication       : No active profile set, falling back to 1 default profile: "default"
-2026-04-24T13:58:04.492+08:00  INFO 20865 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
-2026-04-24T13:58:04.503+08:00  INFO 20865 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-04-24T13:58:04.504+08:00  INFO 20865 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
-2026-04-24T13:58:04.544+08:00  INFO 20865 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-04-24T13:58:04.545+08:00  INFO 20865 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 769 ms
-2026-04-24T13:58:04.822+08:00  INFO 20865 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-2026-04-24T13:58:04.829+08:00  INFO 20865 --- [           main] c.e.mywebsite.MywebsiteApplication       : Started MywebsiteApplication in 1.403 seconds (process running for 1.652)
-2026-04-24T13:58:05.226+08:00  INFO 20865 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-04-24T13:58:05.227+08:00  INFO 20865 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-04-24T13:58:05.228+08:00  INFO 20865 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-04-24T14:40:36.459+08:00  INFO 43392 --- [           main] c.e.mywebsite.MywebsiteApplication       : Starting MywebsiteApplication using Java 21.0.10 with PID 43392 (/home/dev/mywebsite/target/classes started by dev in /home/dev/mywebsite)
+2026-04-24T14:40:36.460+08:00  INFO 43392 --- [           main] c.e.mywebsite.MywebsiteApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-04-24T14:40:36.967+08:00  INFO 43392 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-24T14:40:37.004+08:00  INFO 43392 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 30 ms. Found 1 JPA repository interface.
+2026-04-24T14:40:37.091+08:00  WARN 43392 --- [           main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[com.example.mywebsite]' package. Please check your configuration.
+2026-04-24T14:40:37.393+08:00  INFO 43392 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-24T14:40:37.403+08:00  INFO 43392 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-24T14:40:37.403+08:00  INFO 43392 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2026-04-24T14:40:37.450+08:00  INFO 43392 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-24T14:40:37.451+08:00  INFO 43392 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 954 ms
+2026-04-24T14:40:37.573+08:00  INFO 43392 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-24T14:40:37.634+08:00  INFO 43392 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-04-24T14:40:37.662+08:00  INFO 43392 --- [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-24T14:40:37.930+08:00  INFO 43392 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-24T14:40:37.950+08:00  INFO 43392 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-24T14:40:38.046+08:00  INFO 43392 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@2bfc2f8b
+2026-04-24T14:40:38.049+08:00  INFO 43392 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-24T14:40:38.644+08:00  INFO 43392 --- [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-24T14:40:38.667+08:00  INFO 43392 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-24T14:40:38.902+08:00  WARN 43392 --- [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-24T14:40:39.246+08:00  WARN 43392 --- [           main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-04-24T14:40:39.248+08:00  INFO 43392 --- [           main] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-24T14:40:39.250+08:00  INFO 43392 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-24T14:40:39.251+08:00  INFO 43392 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-04-24T14:40:39.264+08:00  INFO 43392 --- [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-04-24T14:40:39.275+08:00 ERROR 43392 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8080 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
+
+[[1;34mINFO[m] [1m-----------------------------------------------------2026-04-24T14:41:12.799+08:00  INFO 43246 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-04-24T14:41:12.801+08:00  INFO 43246 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-04-24T14:41:12.802+08:00  INFO 43246 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+[m [1m(default-cli)[m on project [36mmywebsite[m: [1;31mProcess terminated with exit code: 1[m -> [1m[Help 1][m
+[[1;31mERROR[m] 
+[[1;31mERROR[m] To see the full stack trace of the errors, re-run Maven with the [1m-e[m switch.
+[[1;31mERROR[m] Re-run Maven using the [1m-X[m switch to enable full debug logging.
+[[1;31mERROR[m] 
+[[1;31mERROR[m] For more information about the errors and possible solutions, please read the following articles:
+[[1;31mERROR[m] [1m[Help 1][m http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<!--
+    userForm.html - 用户表单页面
+
+    用于添加用户和编辑用户信息
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${user == null} ? '添加用户' : '编辑用户'">用户表单</title>
+    <style>
+        /* -------------------- 全局样式 -------------------- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #f5f6fa;
+            min-height: 100vh;
+        }
+
+        /* -------------------- 顶部导航栏 -------------------- */
+        .navbar {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .navbar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar .nav-link.active {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .navbar .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar .username {
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* -------------------- 主内容区 -------------------- */
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* -------------------- 表单卡片 -------------------- */
+        .form-card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-card h1 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        /* -------------------- 表单组 -------------------- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group label .required {
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group input:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .form-group .hint {
+            margin-top: 5px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* -------------------- 错误提示 -------------------- */
+        .error-msg {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* -------------------- 按钮组 -------------------- */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            border: none;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="logo">📚 门户网站</div>
+        <div class="nav-links">
+            <!-- 首页链接 -->
+            <a th:href="@{/main}" class="nav-link">首页</a>
+            <!-- 后台管理链接 -->
+            <a th:href="@{/admin/users}" class="nav-link active">后台管理</a>
+        </div>
+        <div class="user-info">
+            <span class="username" th:text="'欢迎，' + ${username}">欢迎，用户</span>
+            <a th:href="@{/logout}" class="logout-btn">退出登录</a>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <div class="container">
+        <div class="form-card">
+            <!-- 标题：添加用户 或 编辑用户 -->
+            <h1 th:text="${user == null} ? '➕ 添加用户' : '✏️ 编辑用户'">用户表单</h1>
+
+            <!-- 表单 -->
+            <!-- 如果 user 为空，则是添加；否则是编辑 -->
+            <form th:action="${user == null} ? @{/admin/user/save} : @{/admin/user/update}" 
+                  th:object="${user}" 
+                  method="post">
+                
+                <!-- 用户ID（编辑时需要） -->
+                <input type="hidden" th:if="${user != null}" th:field="*{id}" />
+                <input type="hidden" th:if="${user != null}" th:field="*{createdAt}" />
+
+                <!-- 用户名 -->
+                <div class="form-group">
+                    <label>
+                        用户名 <span class="required">*</span>
+                    </label>
+                    <input type="text" 
+                           th:field="*{username}" 
+                           placeholder="请输入用户名"
+                           required
+                           th:disabled="${user != null}" />
+                    <div class="hint" th:if="${user == null}">用户名一旦创建不能修改</div>
+                    <div class="error-msg" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+
+                <!-- 密码 -->
+                <div class="form-group">
+                    <label>
+                        密码 <span class="required" th:if="${user == null}">*</span>
+                        <span th:if="${user != null}">(不修改则留空)</span>
+                    </label>
+                    <input type="password" 
+                           th:field="*{password}" 
+                           th:placeholder="${user == null} ? '请输入密码' : '留空则不修改密码'"
+                           th:required="${user == null}" />
+                    <div class="hint" th:if="${user != null}">不修改密码请留空</div>
+                </div>
+
+                <!-- 确认密码（仅添加时显示） -->
+                <div class="form-group" th:if="${user == null}">
+                    <label>
+                        确认密码 <span class="required">*</span>
+                    </label>
+                    <input type="password" 
+                           name="confirmPassword" 
+                           placeholder="请再次输入密码"
+                           required />
+                </div>
+
+                <!-- 角色选择 -->
+                <div class="form-group">
+                    <label>
+                        角色 <span class="required">*</span>
+                    </label>
+                    <select th:field="*{isAdmin}" required>
+                        <option value="0">普通用户</option>
+                        <option value="1">管理员</option>
+                    </select>
+                </div>
+
+                <!-- 状态（仅编辑时显示） -->
+                <div class="form-group" th:if="${user != null}">
+                    <label>状态</label>
+                    <select th:field="*{isDeleted}">
+                        <option value="0">正常</option>
+                        <option value="1">已删除</option>
+                    </select>
+                </div>
+
+                <!-- 按钮组 -->
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">
+                        <span th:text="${user == null} ? '添加' : '保存'">提交</span>
+                    </button>
+                    <a th:href="@{/admin/users}" class="btn btn-secondary">取消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
