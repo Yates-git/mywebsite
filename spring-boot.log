@@ -1,0 +1,53 @@
+nohup: ignoring input
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-----------------------< [0;36mcom.example:mywebsite[0;1m >------------------------[m
+[[1;34mINFO[m] [1mBuilding mywebsite 1.0.0[m
+[[1;34mINFO[m]   from pom.xml
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mclean:3.3.2:clean[m [1m(default-clean)[m @ [36mmywebsite[0;1m ---[m
+[[1;34mINFO[m] Deleting /home/dev/mywebsite/target
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m>>> [0;32mspring-boot:3.3.0:run[m [1m(default-cli)[0;1m > [0;1mtest-compile[m @ [36mmywebsite[0;1m >>>[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mresources:3.3.1:resources[m [1m(default-resources)[m @ [36mmywebsite[0;1m ---[m
+[[1;34mINFO[m] Copying 1 resource from src/main/resources to target/classes
+[[1;34mINFO[m] Copying 2 resources from src/main/resources to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mcompiler:3.13.0:compile[m [1m(default-compile)[m @ [36mmywebsite[0;1m ---[m
+[[1;34mINFO[m] Recompiling the module because of [1mchanged source code[m.
+[[1;34mINFO[m] Compiling 3 source files with javac [debug parameters release 21] to target/classes
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mresources:3.3.1:testResources[m [1m(default-testResources)[m @ [36mmywebsite[0;1m ---[m
+[[1;34mINFO[m] skip non existing resourceDirectory /home/dev/mywebsite/src/test/resources
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mcompiler:3.13.0:testCompile[m [1m(default-testCompile)[m @ [36mmywebsite[0;1m ---[m
+[[1;34mINFO[m] No sources to compile
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m<<< [0;32mspring-boot:3.3.0:run[m [1m(default-cli)[0;1m < [0;1mtest-compile[m @ [36mmywebsite[0;1m <<<[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mspring-boot:3.3.0:run[m [1m(default-cli)[m @ [36mmywebsite[0;1m ---[m
+[[1;34mINFO[m] Attaching agents: []
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2026-04-24T13:58:03.735+08:00  INFO 20865 --- [           main] c.e.mywebsite.MywebsiteApplication       : Starting MywebsiteApplication using Java 21.0.10 with PID 20865 (/home/dev/mywebsite/target/classes started by dev in /home/dev/mywebsite)
+2026-04-24T13:58:03.737+08:00  INFO 20865 --- [           main] c.e.mywebsite.MywebsiteApplication       : No active profile set, falling back to 1 default profile: "default"
+2026-04-24T13:58:04.492+08:00  INFO 20865 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-24T13:58:04.503+08:00  INFO 20865 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-24T13:58:04.504+08:00  INFO 20865 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2026-04-24T13:58:04.544+08:00  INFO 20865 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-24T13:58:04.545+08:00  INFO 20865 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 769 ms
+2026-04-24T13:58:04.822+08:00  INFO 20865 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-04-24T13:58:04.829+08:00  INFO 20865 --- [           main] c.e.mywebsite.MywebsiteApplication       : Started MywebsiteApplication in 1.403 seconds (process running for 1.652)
+2026-04-24T13:58:05.226+08:00  INFO 20865 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-24T13:58:05.227+08:00  INFO 20865 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-24T13:58:05.228+08:00  INFO 20865 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

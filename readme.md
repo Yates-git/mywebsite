@@ -14,8 +14,9 @@ mywebsite/
 在wsl中执行以下命令启动系统，默认账号密码admin:123456
 mvn -U clean spring-boot:run
 地址：http://localhost:8080
-
-
+使用以下命令可以后台无窗口启动及停止
+启动：nohup mvn -U clean spring-boot:run > spring-boot.log 2>&1 & echo $!
+停止：pkill -f "spring-boot:run"
 
 pom.xml
 作用： 告诉 Maven 需要下载哪些库
