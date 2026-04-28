@@ -215,17 +215,17 @@
     <div class="container">
         <div class="form-card">
             <!-- 标题：添加用户 或 编辑用户 -->
-            <h1 th:text="${user == null} ? '➕ 添加用户' : '✏️ 编辑用户'">用户表单</h1>
+            <h1 th:text="${user == null or user.id == null} ? '➕ 添加用户' : '✏️ 编辑用户'">用户表单</h1>
 
             <!-- 表单 -->
-            <!-- 如果 user 为空，则是添加；否则是编辑 -->
-            <form th:action="${user == null} ? @{/admin/user/save} : @{/admin/user/update}" 
+            <!-- 如果 user 为空或无id，则是添加；否则是编辑 -->
+            <form th:action="${user == null or user.id == null} ? @{/admin/user/save} : @{/admin/user/update}" 
                   th:object="${user}" 
                   method="post">
                 
                 <!-- 用户ID（编辑时需要） -->
-                <input type="hidden" th:if="${user != null}" th:field="*{id}" />
-                <input type="hidden" th:if="${user != null}" th:field="*{createdAt}" />
+                <input type="hidden" th:if="${user != null and user.id != null}" th:field="*{id}" />
+                <input type="hidden" th:if="${user != null and user.id != null}" th:field="*{createdAt}" />
 
                 <!-- 用户名 -->
                 <div class="form-group">
@@ -236,8 +236,8 @@
                            th:field="*{username}" 
                            placeholder="请输入用户名"
                            required
-                           th:disabled="${user != null}" />
-                    <div class="hint" th:if="${user == null}">用户名一旦创建不能修改</div>
+                           th:disabled="${user != null and user.id != null}" />
+                    <div class="hint" th:if="${user == null or user.id == null}">用户名一旦创建不能修改</div>
                     <div class="error-msg" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
                 </div>
 
@@ -255,7 +255,7 @@
                 </div>
 
                 <!-- 确认密码（仅添加时显示） -->
-                <div class="form-group" th:if="${user == null}">
+                <div class="form-group" th:if="${user == null or user.id == null}">
                     <label>
                         确认密码 <span class="required">*</span>
                     </label>
@@ -277,11 +277,11 @@
                 </div>
 
                 <!-- 状态（仅编辑时显示） -->
-                <div class="form-group" th:if="${user != null}">
+                <div class="form-group" th:if="${user != null and user.id != null}">
                     <label>状态</label>
                     <select th:field="*{isDeleted}">
                         <option value="0">正常</option>
-                        <option value="1">已删除</option>
+                        <option value="1">禁用</option>
                     </select>
                 </div>
 

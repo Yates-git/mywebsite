@@ -308,7 +308,7 @@
                         </td>
                         <td>
                             <span class="status-tag" th:classappend="${user.isDeleted == 0} ? 'active' : 'deleted'"
-                                  th:text="${user.isDeleted == 0} ? '正常' : '已删除'">正常</span>
+                                  th:text="${user.isDeleted == 0} ? '正常' : '禁用'">正常</span>
                         </td>
                         <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</td>
                         <td th:text="${#temporals.format(user.updatedAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</td>
