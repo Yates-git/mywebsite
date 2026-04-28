@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import com.example.mywebsite.User;
+import com.example.mywebsite.Group;
 
 /**
  * Controller.java - 控制器
@@ -46,6 +50,9 @@ public class UserController {
      */
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private GroupService groupService;
 
     /**
      * 首页/登录页 - 处理 GET 请求
@@ -189,10 +196,19 @@ public class UserController {
         // 获取所有用户（包括已删除的）
         List<User> users = userRepository.findAll();
 
+        // 获取每个用户所属的分组（userId -> 分组名称列表）
+        Map<Long, List<String>> userGroupsMap = new HashMap<>();
+        for (User user : users) {
+            List<Group> groups = groupService.getUserGroups(user.getId());
+            List<String> groupNames = groups.stream().map(Group::getName).collect(Collectors.toList());
+            userGroupsMap.put(user.getId(), groupNames);
+        }
+
         // 传递数据给页面
         model.addAttribute("username", session.getAttribute("loginUser"));
         model.addAttribute("isAdmin", true);
         model.addAttribute("users", users);
+        model.addAttribute("userGroupsMap", userGroupsMap);
 
         // 返回用户管理页面
         return "userManage";

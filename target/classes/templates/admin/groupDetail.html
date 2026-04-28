@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <!--
-    userManage.html - 用户管理页面
-    管理员功能：查看、添加、编辑、删除用户
+    groupDetail.html - 分组详情页面
+    查看分组内的成员，管理成员加入/离开分组
 -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>用户管理</title>
+    <title>分组详情</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f6fa; height: 100vh; overflow: hidden; }
@@ -43,6 +43,7 @@
         .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
         .card-header h2 { color: #333; font-size: 22px; }
+        .card-header h2 span { color: #667eea; }
         .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
         .btn-primary { background: #667eea; color: white; }
         .btn-primary:hover { background: #5568d3; }
@@ -58,12 +59,11 @@
         .role-tag { padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 500; }
         .role-tag.admin { background: #ffeaea; color: #e74c3c; }
         .role-tag.user { background: #e8f5e9; color: #27ae60; }
-        .status-tag { padding: 4px 10px; border-radius: 3px; font-size: 12px; }
-        .status-tag.active { background: #e8f5e9; color: #27ae60; }
-        .status-tag.deleted { background: #fce4ec; color: #e91e63; }
-        .group-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; background: #e3f2fd; color: #1976d2; margin-right: 4px; }
-        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
-        .action-btns { display: flex; gap: 8px; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .info-group { display: flex; gap: 40px; margin-bottom: 20px; flex-wrap: wrap; }
+        .info-item { }
+        .info-label { color: #999; font-size: 14px; margin-bottom: 5px; }
+        .info-value { color: #333; font-size: 16px; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -87,11 +87,11 @@
                         <span class="arrow">▼</span>
                     </a>
                     <div class="submenu open" id="admin-submenu">
-                        <a th:href="@{/admin/users}" class="nav-link active">
+                        <a th:href="@{/admin/users}" class="nav-link">
                             <span class="icon">👥</span>
                             <span class="text">用户管理</span>
                         </a>
-                        <a th:href="@{/admin/groups}" class="nav-link">
+                        <a th:href="@{/admin/groups}" class="nav-link active">
                             <span class="icon">📂</span>
                             <span class="text">分组管理</span>
                         </a>
@@ -109,7 +109,7 @@
             <header class="header">
                 <div class="header-left">
                     <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
-                    <span class="header-title">用户管理</span>
+                    <span class="header-title">分组详情</span>
                 </div>
                 <div class="header-right">
                     <span class="header-user" th:text="'欢迎，' + ${session.loginUser}">欢迎，用户</span>
@@ -121,60 +121,96 @@
                 <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
                 <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
 
+                <!-- 分组信息 -->
                 <div class="card">
                     <div class="card-header">
-                        <h2>👥 用户管理</h2>
-                        <a th:href="@{/admin/user/add}" class="btn btn-primary">➕ 添加用户</a>
+                        <h2><span th:text="${group.name}">技术部</span> - 分组详情</h2>
+                        <a th:href="@{/admin/groups}" class="btn btn-secondary">← 返回分组列表</a>
                     </div>
+                    <div class="info-group">
+                        <div class="info-item">
+                            <div class="info-label">分组名称</div>
+                            <div class="info-value" th:text="${group.name}">技术部</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">描述</div>
+                            <div class="info-value" th:text="${group.description != null ? group.description : '-'}">技术部门成员</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">创建时间</div>
+                            <div class="info-value" th:text="${#temporals.format(group.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">成员数量</div>
+                            <div class="info-value" th:text="${members.size()}">5</div>
+                        </div>
+                    </div>
+                </div>
 
+                <!-- 成员列表 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>👥 分组成员 (<span th:text="${members.size()}">5</span>)</h2>
+                    </div>
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>用户名</th>
                                 <th>角色</th>
-                                <th>状态</th>
-                                <th>所属分组</th>
-                                <th>创建时间</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="user : ${users}">
+                            <tr th:each="user : ${members}">
                                 <td th:text="${user.id}">1</td>
-                                <td th:text="${user.username}">admin</td>
+                                <td th:text="${user.username}">user1</td>
                                 <td>
                                     <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
                                     <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
                                 </td>
                                 <td>
-                                    <span class="status-tag active" th:if="${user.isDeleted == 0}">正常</span>
-                                    <span class="status-tag deleted" th:if="${user.isDeleted == 1}">禁用</span>
-                                </td>
-                                <td>
-                                    <span th:if="${userGroupsMap.get(user.id).size() > 0}">
-                                        <span th:each="gName : ${userGroupsMap.get(user.id)}">
-                                            <span class="group-tag" th:text="${gName}">分组</span>
-                                        </span>
-                                    </span>
-                                    <span th:if="${userGroupsMap.get(user.id).size() == 0}" style="color: #999;">-</span>
-                                </td>
-                                <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <a th:href="@{/admin/user/edit/{id}(id=${user.id})}" class="btn btn-secondary btn-sm">编辑</a>
-                                        <a th:href="@{/admin/user/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm"
-                                           th:text="${user.isDeleted == 0} ? '删除' : '恢复'"
-                                           onclick="return confirm(this.textContent === '删除' ? '确定要删除该用户吗？' : '确定要恢复该用户吗？')">删除</a>
-                                    </div>
+                                    <a th:href="@{/admin/group/{groupId}/removeUser/{userId}(groupId=${group.id}, userId=${user.id})}" 
+                                       class="btn btn-danger btn-sm" 
+                                       onclick="return confirm('确定要将该用户移出分组吗？')">移出分组</a>
                                 </td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(users)}">
-                                <td colspan="7">
-                                    <div class="empty-state">
-                                        <div style="font-size: 60px; margin-bottom: 20px;">📭</div>
-                                        <p>暂无用户数据</p>
-                                    </div>
+                            <tr th:if="${#lists.isEmpty(members)}">
+                                <td colspan="4">
+                                    <div class="empty-state">暂无成员</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 添加成员 -->
+                <div class="card" th:if="${not #lists.isEmpty(otherUsers)}">
+                    <div class="card-header">
+                        <h2>➕ 添加成员</h2>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>用户名</th>
+                                <th>角色</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${otherUsers}">
+                                <td th:text="${user.id}">10</td>
+                                <td th:text="${user.username}">newuser</td>
+                                <td>
+                                    <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
+                                    <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
+                                </td>
+                                <td>
+                                    <form th:action="@{/admin/group/{id}/addUser(id=${group.id})}" method="post" style="display: inline;">
+                                        <input type="hidden" name="userId" th:value="${user.id}">
+                                        <button type="submit" class="btn btn-primary btn-sm">添加到分组</button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>

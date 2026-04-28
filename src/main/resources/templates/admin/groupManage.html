@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <!--
-    userManage.html - 用户管理页面
-    管理员功能：查看、添加、编辑、删除用户
+    groupManage.html - 分组管理页面
+    显示所有分组，提供创建、删除分组功能
 -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>用户管理</title>
+    <title>分组管理</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f6fa; height: 100vh; overflow: hidden; }
@@ -55,15 +55,16 @@
         .table th, .table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
         .table th { background: #f8f9fa; color: #333; font-weight: 600; }
         .table tr:hover { background: #f8f9fa; }
-        .role-tag { padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 500; }
-        .role-tag.admin { background: #ffeaea; color: #e74c3c; }
-        .role-tag.user { background: #e8f5e9; color: #27ae60; }
-        .status-tag { padding: 4px 10px; border-radius: 3px; font-size: 12px; }
-        .status-tag.active { background: #e8f5e9; color: #27ae60; }
-        .status-tag.deleted { background: #fce4ec; color: #e91e63; }
-        .group-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; background: #e3f2fd; color: #1976d2; margin-right: 4px; }
         .empty-state { text-align: center; padding: 60px 20px; color: #999; }
-        .action-btns { display: flex; gap: 8px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 10px; padding: 30px; width: 450px; max-width: 90%; }
+        .modal h3 { color: #333; margin-bottom: 20px; font-size: 18px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #333; font-weight: 500; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-group textarea { height: 80px; resize: vertical; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -87,11 +88,11 @@
                         <span class="arrow">▼</span>
                     </a>
                     <div class="submenu open" id="admin-submenu">
-                        <a th:href="@{/admin/users}" class="nav-link active">
+                        <a th:href="@{/admin/users}" class="nav-link">
                             <span class="icon">👥</span>
                             <span class="text">用户管理</span>
                         </a>
-                        <a th:href="@{/admin/groups}" class="nav-link">
+                        <a th:href="@{/admin/groups}" class="nav-link active">
                             <span class="icon">📂</span>
                             <span class="text">分组管理</span>
                         </a>
@@ -109,7 +110,7 @@
             <header class="header">
                 <div class="header-left">
                     <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
-                    <span class="header-title">用户管理</span>
+                    <span class="header-title">分组管理</span>
                 </div>
                 <div class="header-right">
                     <span class="header-user" th:text="'欢迎，' + ${session.loginUser}">欢迎，用户</span>
@@ -123,57 +124,37 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h2>👥 用户管理</h2>
-                        <a th:href="@{/admin/user/add}" class="btn btn-primary">➕ 添加用户</a>
+                        <h2>📂 分组管理</h2>
+                        <button class="btn btn-primary" onclick="showCreateModal()">➕ 创建分组</button>
                     </div>
 
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>用户名</th>
-                                <th>角色</th>
-                                <th>状态</th>
-                                <th>所属分组</th>
+                                <th>分组名称</th>
+                                <th>描述</th>
                                 <th>创建时间</th>
                                 <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="user : ${users}">
-                                <td th:text="${user.id}">1</td>
-                                <td th:text="${user.username}">admin</td>
+                            <tr th:each="group : ${groups}">
+                                <td th:text="${group.id}">1</td>
+                                <td th:text="${group.name}">技术部</td>
+                                <td th:text="${group.description != null ? group.description : '-'}">技术部门成员</td>
+                                <td th:text="${#temporals.format(group.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</td>
                                 <td>
-                                    <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
-                                    <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
-                                </td>
-                                <td>
-                                    <span class="status-tag active" th:if="${user.isDeleted == 0}">正常</span>
-                                    <span class="status-tag deleted" th:if="${user.isDeleted == 1}">禁用</span>
-                                </td>
-                                <td>
-                                    <span th:if="${userGroupsMap.get(user.id).size() > 0}">
-                                        <span th:each="gName : ${userGroupsMap.get(user.id)}">
-                                            <span class="group-tag" th:text="${gName}">分组</span>
-                                        </span>
-                                    </span>
-                                    <span th:if="${userGroupsMap.get(user.id).size() == 0}" style="color: #999;">-</span>
-                                </td>
-                                <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <a th:href="@{/admin/user/edit/{id}(id=${user.id})}" class="btn btn-secondary btn-sm">编辑</a>
-                                        <a th:href="@{/admin/user/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm"
-                                           th:text="${user.isDeleted == 0} ? '删除' : '恢复'"
-                                           onclick="return confirm(this.textContent === '删除' ? '确定要删除该用户吗？' : '确定要恢复该用户吗？')">删除</a>
-                                    </div>
+                                    <a th:href="@{/admin/group/{id}(id=${group.id})}" class="btn btn-secondary btn-sm">👥 成员</a>
+                                    <button type="button" class="btn btn-primary btn-sm" th:attr="data-id=${group.id}, data-name=${group.name}, data-desc=${group.description != null ? group.description : ''}" onclick="showEditModal(this)">✏️ 编辑</button>
+                                    <a th:href="@{/admin/group/delete/{id}(id=${group.id})}" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除该分组吗？')">🗑️ 删除</a>
                                 </td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(users)}">
-                                <td colspan="7">
+                            <tr th:if="${#lists.isEmpty(groups)}">
+                                <td colspan="5">
                                     <div class="empty-state">
-                                        <div style="font-size: 60px; margin-bottom: 20px;">📭</div>
-                                        <p>暂无用户数据</p>
+                                        <div style="font-size: 60px; margin-bottom: 20px;">📂</div>
+                                        <p>暂无分组数据</p>
                                     </div>
                                 </td>
                             </tr>
@@ -181,6 +162,49 @@
                     </table>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- 创建分组模态框 -->
+    <div id="createModal" class="modal-overlay">
+        <div class="modal">
+            <h3>创建分组</h3>
+            <form th:action="@{/admin/group/create}" method="post">
+                <div class="form-group">
+                    <label>分组名称 <span style="color: #e74c3c;">*</span></label>
+                    <input type="text" name="name" required placeholder="请输入分组名称">
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea name="description" placeholder="请输入分组描述（可选）"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideCreateModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">创建</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 编辑分组模态框 -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal">
+            <h3>编辑分组</h3>
+            <form th:action="@{/admin/group/update}" method="post">
+                <input type="hidden" id="editGroupId" name="id">
+                <div class="form-group">
+                    <label>分组名称 <span style="color: #e74c3c;">*</span></label>
+                    <input type="text" id="editGroupName" name="name" required placeholder="请输入分组名称">
+                </div>
+                <div class="form-group">
+                    <label>描述</label>
+                    <textarea id="editGroupDesc" name="description" placeholder="请输入分组描述（可选）"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideEditModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -199,6 +223,27 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('collapsed');
         }
+        function showCreateModal() {
+            document.getElementById('createModal').style.display = 'flex';
+        }
+        function hideCreateModal() {
+            document.getElementById('createModal').style.display = 'none';
+        }
+        document.getElementById('createModal').addEventListener('click', function(e) {
+            if (e.target === this) hideCreateModal();
+        });
+        function showEditModal(btn) {
+            document.getElementById('editGroupId').value = btn.getAttribute('data-id');
+            document.getElementById('editGroupName').value = btn.getAttribute('data-name');
+            document.getElementById('editGroupDesc').value = btn.getAttribute('data-desc') || '';
+            document.getElementById('editModal').style.display = 'flex';
+        }
+        function hideEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) hideEditModal();
+        });
     </script>
 </body>
 </html>

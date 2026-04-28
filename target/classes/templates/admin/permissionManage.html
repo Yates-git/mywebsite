@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <!--
-    userManage.html - 用户管理页面
-    管理员功能：查看、添加、编辑、删除用户
+    permissionManage.html - 权限管理页面
+    为不同分组配置可访问的页面权限
 -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>用户管理</title>
+    <title>权限管理</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f6fa; height: 100vh; overflow: hidden; }
@@ -40,30 +40,33 @@
         .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
         .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
         .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
         .card-header h2 { color: #333; font-size: 22px; }
         .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
         .btn-primary { background: #667eea; color: white; }
         .btn-primary:hover { background: #5568d3; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-danger:hover { background: #c82333; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-success:hover { background: #218838; }
         .btn-secondary { background: #6c757d; color: white; }
         .btn-secondary:hover { background: #5a6268; }
         .btn-sm { padding: 6px 12px; font-size: 12px; }
         .table { width: 100%; border-collapse: collapse; }
-        .table th, .table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        .table th, .table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #eee; vertical-align: middle; }
         .table th { background: #f8f9fa; color: #333; font-weight: 600; }
         .table tr:hover { background: #f8f9fa; }
-        .role-tag { padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 500; }
-        .role-tag.admin { background: #ffeaea; color: #e74c3c; }
-        .role-tag.user { background: #e8f5e9; color: #27ae60; }
-        .status-tag { padding: 4px 10px; border-radius: 3px; font-size: 12px; }
-        .status-tag.active { background: #e8f5e9; color: #27ae60; }
-        .status-tag.deleted { background: #fce4ec; color: #e91e63; }
-        .group-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; background: #e3f2fd; color: #1976d2; margin-right: 4px; }
-        .empty-state { text-align: center; padding: 60px 20px; color: #999; }
-        .action-btns { display: flex; gap: 8px; }
+        .page-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #e9ecef; color: #495057; }
+        .page-tag.system { background: #ffeaea; color: #e74c3c; }
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 10px; padding: 30px; width: 450px; max-width: 90%; }
+        .modal h3 { color: #333; margin-bottom: 20px; font-size: 18px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #333; font-weight: 500; }
+        .form-group input { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -87,7 +90,7 @@
                         <span class="arrow">▼</span>
                     </a>
                     <div class="submenu open" id="admin-submenu">
-                        <a th:href="@{/admin/users}" class="nav-link active">
+                        <a th:href="@{/admin/users}" class="nav-link">
                             <span class="icon">👥</span>
                             <span class="text">用户管理</span>
                         </a>
@@ -95,7 +98,7 @@
                             <span class="icon">📂</span>
                             <span class="text">分组管理</span>
                         </a>
-                        <a th:href="@{/admin/permissions}" class="nav-link">
+                        <a th:href="@{/admin/permissions}" class="nav-link active">
                             <span class="icon">🔐</span>
                             <span class="text">权限管理</span>
                         </a>
@@ -109,7 +112,7 @@
             <header class="header">
                 <div class="header-left">
                     <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
-                    <span class="header-title">用户管理</span>
+                    <span class="header-title">权限管理</span>
                 </div>
                 <div class="header-right">
                     <span class="header-user" th:text="'欢迎，' + ${session.loginUser}">欢迎，用户</span>
@@ -120,67 +123,102 @@
             <main class="main-content">
                 <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
                 <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+                <div class="alert alert-info">
+                    💡 提示：权限管理仅对普通用户生效。管理员默认拥有所有页面的访问权限。
+                </div>
 
+                <!-- 页面列表 -->
                 <div class="card">
                     <div class="card-header">
-                        <h2>👥 用户管理</h2>
-                        <a th:href="@{/admin/user/add}" class="btn btn-primary">➕ 添加用户</a>
+                        <h2>📄 可配置页面</h2>
+                        <button class="btn btn-primary" onclick="showAddPageModal()">➕ 添加页面</button>
                     </div>
-
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>用户名</th>
-                                <th>角色</th>
-                                <th>状态</th>
-                                <th>所属分组</th>
-                                <th>创建时间</th>
-                                <th>操作</th>
+                                <th>页面名称</th>
+                                <th>路径</th>
+                                <th>类型</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="user : ${users}">
-                                <td th:text="${user.id}">1</td>
-                                <td th:text="${user.username}">admin</td>
+                            <tr th:each="page : ${pages}">
+                                <td th:text="${page.id}">1</td>
+                                <td th:text="${page.name}">首页</td>
+                                <td><code th:text="${page.path}">/main</code></td>
                                 <td>
-                                    <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
-                                    <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
-                                </td>
-                                <td>
-                                    <span class="status-tag active" th:if="${user.isDeleted == 0}">正常</span>
-                                    <span class="status-tag deleted" th:if="${user.isDeleted == 1}">禁用</span>
-                                </td>
-                                <td>
-                                    <span th:if="${userGroupsMap.get(user.id).size() > 0}">
-                                        <span th:each="gName : ${userGroupsMap.get(user.id)}">
-                                            <span class="group-tag" th:text="${gName}">分组</span>
-                                        </span>
-                                    </span>
-                                    <span th:if="${userGroupsMap.get(user.id).size() == 0}" style="color: #999;">-</span>
-                                </td>
-                                <td th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</td>
-                                <td>
-                                    <div class="action-btns">
-                                        <a th:href="@{/admin/user/edit/{id}(id=${user.id})}" class="btn btn-secondary btn-sm">编辑</a>
-                                        <a th:href="@{/admin/user/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm"
-                                           th:text="${user.isDeleted == 0} ? '删除' : '恢复'"
-                                           onclick="return confirm(this.textContent === '删除' ? '确定要删除该用户吗？' : '确定要恢复该用户吗？')">删除</a>
-                                    </div>
+                                    <span class="page-tag system" th:if="${page.isSystem}">系统页面</span>
+                                    <span class="page-tag" th:unless="${page.isSystem}">自定义</span>
                                 </td>
                             </tr>
-                            <tr th:if="${#lists.isEmpty(users)}">
-                                <td colspan="7">
-                                    <div class="empty-state">
-                                        <div style="font-size: 60px; margin-bottom: 20px;">📭</div>
-                                        <p>暂无用户数据</p>
-                                    </div>
+                            <tr th:if="${#lists.isEmpty(pages)}">
+                                <td colspan="4">
+                                    <div class="empty-state">暂无页面数据</div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+
+                <!-- 分组权限配置 -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2>🔐 分组权限配置</h2>
+                    </div>
+                    <div th:if="${#lists.isEmpty(groups)}" class="empty-state">
+                        暂无分组数据，请先到分组管理创建分组
+                    </div>
+                    <div th:if="${not #lists.isEmpty(groups)}">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 150px;">分组</th>
+                                    <th th:each="page : ${pages}" th:text="${page.name}">首页</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="group : ${groups}">
+                                    <td th:text="${group.name}">技术部</td>
+                                    <td th:each="page : ${pages}">
+                                        <input type="checkbox" 
+                                               th:id="${'g' + group.id + 'p' + page.id}"
+                                               th:checked="${page.path == '/main' or (groupPermissions.get(group.id) != null && groupPermissions.get(group.id).contains(page.id))}"
+                                               th:disabled="${page.path == '/main'}"
+                                               th:data-path="${page.path}"
+                                               onchange="savePermission(this, [[${group.id}]], [[${page.id}]], [[${page.path}]])">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </main>
+        </div>
+    </div>
+
+    <!-- 添加页面模态框 -->
+    <div id="addPageModal" class="modal-overlay">
+        <div class="modal">
+            <h3>添加新页面</h3>
+            <form th:action="@{/admin/page/add}" method="post">
+                <div class="form-group">
+                    <label>页面名称 <span style="color: #e74c3c;">*</span></label>
+                    <input type="text" name="name" required placeholder="如：新闻页面">
+                </div>
+                <div class="form-group">
+                    <label>页面路径 <span style="color: #e74c3c;">*</span></label>
+                    <input type="text" name="path" required placeholder="如：/news" pattern="/.*">
+                </div>
+                <div class="form-group">
+                    <label>排序（数字越小越靠前）</label>
+                    <input type="number" name="sortOrder" value="99" placeholder="99">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="hideAddPageModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">添加</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -198,6 +236,43 @@
         }
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+        function showAddPageModal() {
+            document.getElementById('addPageModal').style.display = 'flex';
+        }
+        function hideAddPageModal() {
+            document.getElementById('addPageModal').style.display = 'none';
+        }
+        document.getElementById('addPageModal').addEventListener('click', function(e) {
+            if (e.target === this) hideAddPageModal();
+        });
+        
+        function savePermission(checkbox, groupId, pageId, pagePath) {
+            // 首页权限不可取消
+            if (pagePath === '/main' && !checkbox.checked) {
+                checkbox.checked = true;
+                alert('首页权限不可取消');
+                return;
+            }
+            
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/permission/update';
+            
+            var groupInput = document.createElement('input');
+            groupInput.type = 'hidden';
+            groupInput.name = 'groupId';
+            groupInput.value = groupId;
+            form.appendChild(groupInput);
+            
+            var pageInput = document.createElement('input');
+            pageInput.type = 'hidden';
+            pageInput.name = 'pageIds';
+            pageInput.value = pageId;
+            form.appendChild(pageInput);
+            
+            document.body.appendChild(form);
+            form.submit();
         }
     </script>
 </body>

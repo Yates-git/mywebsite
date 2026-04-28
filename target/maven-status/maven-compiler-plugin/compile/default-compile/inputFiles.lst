@@ -1,5 +1,17 @@
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/DataInitializer.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/Group.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/GroupController.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/GroupPermission.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/GroupPermissionRepository.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/GroupRepository.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/GroupService.java
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/MywebsiteApplication.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/Page.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/PageRepository.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/PermissionController.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/PermissionService.java
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/User.java
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/UserController.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/UserGroup.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/UserGroupRepository.java
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/UserRepository.java
