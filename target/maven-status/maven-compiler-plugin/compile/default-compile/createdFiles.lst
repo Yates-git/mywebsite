@@ -6,8 +6,8 @@ com/example/mywebsite/GroupController.class
 com/example/mywebsite/GroupRepository.class
 com/example/mywebsite/UserGroup.class
 com/example/mywebsite/PageRepository.class
-com/example/mywebsite/GroupService.class
 com/example/mywebsite/UserGroupRepository.class
+com/example/mywebsite/GroupService.class
 com/example/mywebsite/Group.class
 com/example/mywebsite/UserRepository.class
 com/example/mywebsite/UserController.class
