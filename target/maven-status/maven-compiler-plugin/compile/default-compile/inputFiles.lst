@@ -1,4 +1,5 @@
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/DataInitializer.java
+/home/dev/mywebsite/src/main/java/com/example/mywebsite/GlobalControllerAdvice.java
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/Group.java
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/GroupController.java
 /home/dev/mywebsite/src/main/java/com/example/mywebsite/GroupPermission.java
