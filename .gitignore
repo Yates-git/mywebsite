@@ -4,3 +4,6 @@ target/
 
 # 忽略所有 .log 文件
 *.log
+
+#忽略数据库数据
+mywebsite.db
