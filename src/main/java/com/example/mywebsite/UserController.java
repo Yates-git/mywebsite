@@ -215,7 +215,7 @@ public class UserController {
         model.addAttribute("currentPage", "users");
 
         // 返回用户管理页面
-        return "userManage";
+        return "admin/userManage";
     }
 
     /**
@@ -244,7 +244,7 @@ public class UserController {
         model.addAttribute("pageTitle", "添加用户");
         model.addAttribute("currentPage", "users");
 
-        return "userForm";
+        return "admin/userForm";
     }
 
     /**
@@ -281,7 +281,7 @@ public class UserController {
         model.addAttribute("pageTitle", "编辑用户");
         model.addAttribute("currentPage", "users");
 
-        return "userForm";
+        return "admin/userForm";
     }
 
     /**
@@ -322,7 +322,7 @@ public class UserController {
             model.addAttribute("error", "两次输入的密码不一致");
             model.addAttribute("pageTitle", "添加用户");
             model.addAttribute("currentPage", "users");
-            return "userForm";
+            return "admin/userForm";
         }
 
         // 检查用户名是否已存在
@@ -334,7 +334,7 @@ public class UserController {
             model.addAttribute("error", "用户名已存在");
             model.addAttribute("pageTitle", "添加用户");
             model.addAttribute("currentPage", "users");
-            return "userForm";
+            return "admin/userForm";
         }
 
         // 创建新用户
