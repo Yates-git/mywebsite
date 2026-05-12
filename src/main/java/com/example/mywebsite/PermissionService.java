@@ -129,4 +129,12 @@ public class PermissionService {
         groupPermissionRepository.deleteByPageId(pageId);
         pageRepository.deleteById(pageId);
     }
+
+    /**
+     * 删除页面时只移除权限关联（页面本身由 Controller 删除）
+     */
+    @Transactional
+    public void removePageFromAllGroups(Long pageId) {
+        groupPermissionRepository.deleteByPageId(pageId);
+    }
 }

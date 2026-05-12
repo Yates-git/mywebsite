@@ -137,6 +137,8 @@ public class UserController {
 
         // 传递当前请求路径给模板，用于高亮导航栏
         model.addAttribute("currentUri", request.getRequestURI());
+        model.addAttribute("pageTitle", "首页");
+        model.addAttribute("currentPage", "home");
 
         // 返回 "main" - Thymeleaf 会去找 templates/main.html
         return "main";
@@ -209,6 +211,8 @@ public class UserController {
         model.addAttribute("isAdmin", true);
         model.addAttribute("users", users);
         model.addAttribute("userGroupsMap", userGroupsMap);
+        model.addAttribute("pageTitle", "用户管理");
+        model.addAttribute("currentPage", "users");
 
         // 返回用户管理页面
         return "userManage";
@@ -236,7 +240,9 @@ public class UserController {
         // 传递数据给页面
         model.addAttribute("username", session.getAttribute("loginUser"));
         model.addAttribute("isAdmin", true);
-        model.addAttribute("user", new User());  // 空 User 对象用于表单绑定
+        model.addAttribute("user", new User());
+        model.addAttribute("pageTitle", "添加用户");
+        model.addAttribute("currentPage", "users");
 
         return "userForm";
     }
@@ -272,6 +278,8 @@ public class UserController {
         model.addAttribute("username", session.getAttribute("loginUser"));
         model.addAttribute("isAdmin", true);
         model.addAttribute("user", userOpt.get());
+        model.addAttribute("pageTitle", "编辑用户");
+        model.addAttribute("currentPage", "users");
 
         return "userForm";
     }
@@ -312,6 +320,8 @@ public class UserController {
             model.addAttribute("isAdmin", true);
             model.addAttribute("user", null);
             model.addAttribute("error", "两次输入的密码不一致");
+            model.addAttribute("pageTitle", "添加用户");
+            model.addAttribute("currentPage", "users");
             return "userForm";
         }
 
@@ -322,6 +332,8 @@ public class UserController {
             model.addAttribute("isAdmin", true);
             model.addAttribute("user", null);
             model.addAttribute("error", "用户名已存在");
+            model.addAttribute("pageTitle", "添加用户");
+            model.addAttribute("currentPage", "users");
             return "userForm";
         }
 

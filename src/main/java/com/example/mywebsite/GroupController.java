@@ -49,6 +49,8 @@ public class GroupController {
         model.addAttribute("username", session.getAttribute("loginUser"));
         model.addAttribute("isAdmin", true);
         model.addAttribute("groups", groups);
+        model.addAttribute("pageTitle", "分组管理");
+        model.addAttribute("currentPage", "groups");
 
         return "admin/groupManage";
     }
@@ -151,6 +153,8 @@ public class GroupController {
         model.addAttribute("group", groupOpt.get());
         model.addAttribute("members", members);
         model.addAttribute("otherUsers", allUsers);
+        model.addAttribute("pageTitle", "分组详情");
+        model.addAttribute("currentPage", "groups");
 
         return "admin/groupDetail";
     }

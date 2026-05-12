@@ -1,241 +1,116 @@
 <!DOCTYPE html>
 <!--
     groupDetail.html - 分组详情页面
-    查看分组内的成员，管理成员加入/离开分组
+    使用：th:replace="~{layout :: layout(pageTitle='分组详情', currentPage='groups', content=~{:: .page-content})}"
 -->
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(pageTitle='分组详情', currentPage='groups', content=~{:: .page-content})}">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" th:href="${faviconLink}" type="image/svg+xml">
     <title>分组详情</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f6fa; height: 100vh; overflow: hidden; }
-        .layout { display: flex; height: 100vh; }
-        .sidebar { width: 240px; background: #2c3e50; color: white; display: flex; flex-direction: column; transition: width 0.3s; overflow: hidden; flex-shrink: 0; }
-        .sidebar.collapsed { width: 60px; }
-        .sidebar-header { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 10px; min-height: 60px; }
-        .sidebar-header .logo { font-size: 20px; font-weight: bold; white-space: nowrap; }
-        .sidebar.collapsed .logo { display: none; }
-        .sidebar-nav { flex: 1; overflow-y: auto; overflow-x: hidden; }
-        .nav-link { display: flex; align-items: center; padding: 12px 15px; color: rgba(255,255,255,0.7); text-decoration: none; transition: all 0.2s; cursor: pointer; white-space: nowrap; }
-        .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
-        .nav-link.active { background: rgba(255,255,255,0.15); color: white; }
-        .nav-link .icon { font-size: 18px; width: 30px; flex-shrink: 0; text-align: center; }
-        .nav-link .text { flex: 1; }
-        .nav-link .arrow { font-size: 12px; transition: transform 0.2s; }
-        .sidebar.collapsed .nav-link .text, .sidebar.collapsed .nav-link .arrow { display: none; }
-        .submenu { display: none; background: rgba(0,0,0,0.2); }
-        .submenu.open { display: block; }
-        .submenu .nav-link { padding-left: 45px; font-size: 14px; }
-        .submenu .nav-link .icon { width: 20px; }
-        .header { height: 60px; background: white; border-bottom: 1px solid #eee; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; flex-shrink: 0; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .toggle-sidebar { background: none; border: none; font-size: 20px; cursor: pointer; padding: 5px; }
-        .header-title { font-size: 18px; color: #333; font-weight: 500; }
-        .header-right { display: flex; align-items: center; gap: 15px; }
-        .header-user { color: #666; font-size: 14px; }
-        .header-logout { background: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; text-decoration: none; }
-        .header-logout:hover { background: #c0392b; }
-        .main-content { flex: 1; overflow-y: auto; padding: 30px; }
-        .alert { padding: 15px 20px; border-radius: 8px; margin-bottom: 20px; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
-        .card-header h2 { color: #333; font-size: 22px; }
-        .card-header h2 span { color: #667eea; }
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-primary:hover { background: #5568d3; }
-        .btn-danger { background: #dc3545; color: white; }
-        .btn-danger:hover { background: #c82333; }
-        .btn-secondary { background: #6c757d; color: white; }
-        .btn-secondary:hover { background: #5a6268; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
-        .table { width: 100%; border-collapse: collapse; }
-        .table th, .table td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
-        .table th { background: #f8f9fa; color: #333; font-weight: 600; }
-        .table tr:hover { background: #f8f9fa; }
-        .role-tag { padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 500; }
-        .role-tag.admin { background: #ffeaea; color: #e74c3c; }
-        .role-tag.user { background: #e8f5e9; color: #27ae60; }
-        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
-        .info-group { display: flex; gap: 40px; margin-bottom: 20px; flex-wrap: wrap; }
-        .info-item { }
-        .info-label { color: #999; font-size: 14px; margin-bottom: 5px; }
-        .info-value { color: #333; font-size: 16px; font-weight: 500; }
+        .card-header h2 span { color: var(--link-color); }
     </style>
 </head>
 <body>
-    <div class="layout">
-        <!-- 左侧导航栏 -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <span class="logo">📚 门户网站</span>
+    <div class="page-content">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <!-- 分组信息 -->
+        <div class="card">
+            <div class="card-header">
+                <h2><span th:text="${group.name}">技术部</span> - 分组详情</h2>
+                <a th:href="@{/admin/groups}" class="btn btn-secondary">← 返回分组列表</a>
             </div>
-            <nav class="sidebar-nav">
-                <div class="nav-item">
-                    <a th:href="@{/main}" class="nav-link">
-                        <span class="icon">🏠</span>
-                        <span class="text">首页</span>
-                    </a>
+            <div class="info-group">
+                <div class="info-item">
+                    <div class="info-label">分组名称</div>
+                    <div class="info-value" th:text="${group.name}">技术部</div>
                 </div>
-                <div class="nav-item">
-                    <a class="nav-link active" onclick="toggleSubmenu('admin-submenu', this)">
-                        <span class="icon">⚙️</span>
-                        <span class="text">后台管理</span>
-                        <span class="arrow">▼</span>
-                    </a>
-                    <div class="submenu open" id="admin-submenu">
-                        <a th:href="@{/admin/users}" class="nav-link">
-                            <span class="icon">👥</span>
-                            <span class="text">用户管理</span>
-                        </a>
-                        <a th:href="@{/admin/groups}" class="nav-link active">
-                            <span class="icon">📂</span>
-                            <span class="text">分组管理</span>
-                        </a>
-                        <a th:href="@{/admin/permissions}" class="nav-link">
-                            <span class="icon">🔐</span>
-                            <span class="text">权限管理</span>
-                        </a>
-                    </div>
+                <div class="info-item">
+                    <div class="info-label">描述</div>
+                    <div class="info-value" th:text="${group.description != null ? group.description : '-'}">技术部门成员</div>
                 </div>
-            </nav>
-        </aside>
+                <div class="info-item">
+                    <div class="info-label">创建时间</div>
+                    <div class="info-value" th:text="${#temporals.format(group.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">成员数量</div>
+                    <div class="info-value" th:text="${members.size()}">5</div>
+                </div>
+            </div>
+        </div>
 
-        <!-- 右侧内容区 -->
-        <div style="flex: 1; display: flex; flex-direction: column; overflow: hidden;">
-            <header class="header">
-                <div class="header-left">
-                    <button class="toggle-sidebar" onclick="toggleSidebar()">☰</button>
-                    <span class="header-title">分组详情</span>
-                </div>
-                <div class="header-right">
-                    <span class="header-user" th:text="'欢迎，' + ${session.loginUser}">欢迎，用户</span>
-                    <a th:href="@{/logout}" class="header-logout">退出登录</a>
-                </div>
-            </header>
+        <!-- 成员列表 -->
+        <div class="card">
+            <div class="card-header">
+                <h2>👥 分组成员 (<span th:text="${members.size()}">5</span>)</h2>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>角色</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${members}">
+                        <td th:text="${user.id}">1</td>
+                        <td th:text="${user.username}">user1</td>
+                        <td>
+                            <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
+                            <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/group/{groupId}/removeUser/{userId}(groupId=${group.id}, userId=${user.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('确定要将该用户移出分组吗？')">移出分组</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(members)}">
+                        <td colspan="4">
+                            <div class="empty-state">暂无成员</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-            <main class="main-content">
-                <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-                <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-
-                <!-- 分组信息 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2><span th:text="${group.name}">技术部</span> - 分组详情</h2>
-                        <a th:href="@{/admin/groups}" class="btn btn-secondary">← 返回分组列表</a>
-                    </div>
-                    <div class="info-group">
-                        <div class="info-item">
-                            <div class="info-label">分组名称</div>
-                            <div class="info-value" th:text="${group.name}">技术部</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">描述</div>
-                            <div class="info-value" th:text="${group.description != null ? group.description : '-'}">技术部门成员</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">创建时间</div>
-                            <div class="info-value" th:text="${#temporals.format(group.createdAt, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">成员数量</div>
-                            <div class="info-value" th:text="${members.size()}">5</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 成员列表 -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>👥 分组成员 (<span th:text="${members.size()}">5</span>)</h2>
-                    </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>用户名</th>
-                                <th>角色</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="user : ${members}">
-                                <td th:text="${user.id}">1</td>
-                                <td th:text="${user.username}">user1</td>
-                                <td>
-                                    <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
-                                    <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
-                                </td>
-                                <td>
-                                    <a th:href="@{/admin/group/{groupId}/removeUser/{userId}(groupId=${group.id}, userId=${user.id})}" 
-                                       class="btn btn-danger btn-sm" 
-                                       onclick="return confirm('确定要将该用户移出分组吗？')">移出分组</a>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(members)}">
-                                <td colspan="4">
-                                    <div class="empty-state">暂无成员</div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- 添加成员 -->
-                <div class="card" th:if="${not #lists.isEmpty(otherUsers)}">
-                    <div class="card-header">
-                        <h2>➕ 添加成员</h2>
-                    </div>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>用户名</th>
-                                <th>角色</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="user : ${otherUsers}">
-                                <td th:text="${user.id}">10</td>
-                                <td th:text="${user.username}">newuser</td>
-                                <td>
-                                    <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
-                                    <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
-                                </td>
-                                <td>
-                                    <form th:action="@{/admin/group/{id}/addUser(id=${group.id})}" method="post" style="display: inline;">
-                                        <input type="hidden" name="userId" th:value="${user.id}">
-                                        <button type="submit" class="btn btn-primary btn-sm">添加到分组</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </main>
+        <!-- 添加成员 -->
+        <div class="card" th:if="${not #lists.isEmpty(otherUsers)}">
+            <div class="card-header">
+                <h2>➕ 添加成员</h2>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>用户名</th>
+                        <th>角色</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="user : ${otherUsers}">
+                        <td th:text="${user.id}">10</td>
+                        <td th:text="${user.username}">newuser</td>
+                        <td>
+                            <span class="role-tag admin" th:if="${user.isAdmin == 1}">管理员</span>
+                            <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/admin/group/{id}/addUser(id=${group.id})}" method="post" style="display: inline;">
+                                <input type="hidden" name="userId" th:value="${user.id}">
+                                <button type="submit" class="btn btn-primary btn-sm">添加到分组</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <script>
-        function toggleSubmenu(id, element) {
-            var submenu = document.getElementById(id);
-            var arrow = element.querySelector('.arrow');
-            if (submenu.classList.contains('open')) {
-                submenu.classList.remove('open');
-                arrow.style.transform = 'rotate(0deg)';
-            } else {
-                submenu.classList.add('open');
-                arrow.style.transform = 'rotate(180deg)';
-            }
-        }
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('collapsed');
-        }
-    </script>
 </body>
 </html>

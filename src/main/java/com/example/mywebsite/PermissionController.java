@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * PermissionController.java - 权限管理控制器
@@ -78,6 +79,8 @@ public class PermissionController {
         model.addAttribute("groups", groups);
         model.addAttribute("pages", pages);
         model.addAttribute("groupPermissions", groupPermissions);
+        model.addAttribute("pageTitle", "权限管理");
+        model.addAttribute("currentPage", "permissions");
 
         return "admin/permissionManage";
     }
@@ -140,6 +143,101 @@ public class PermissionController {
             redirectAttributes.addFlashAttribute("success", "页面 '" + name + "' 添加成功");
         }
 
+        return "redirect:/admin/permissions";
+    }
+
+    /**
+     * 删除页面
+     */
+    @GetMapping("/admin/page/delete/{id}")
+    public String deletePage(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
+        if (!isLoggedIn(session) || !isAdmin(session)) {
+            return "redirect:/";
+        }
+
+        Optional<Page> pageOpt = pageRepository.findById(id);
+        if (pageOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "页面不存在");
+            return "redirect:/admin/permissions";
+        }
+
+        Page page = pageOpt.get();
+        if (Boolean.TRUE.equals(page.getIsSystem())) {
+            redirectAttributes.addFlashAttribute("error", "系统页面不可删除");
+            return "redirect:/admin/permissions";
+        }
+
+        // 删除该页面的所有权限关联
+        permissionService.removePageFromAllGroups(id);
+        pageRepository.deleteById(id);
+        redirectAttributes.addFlashAttribute("success", "页面 '" + page.getName() + "' 已删除");
+        return "redirect:/admin/permissions";
+    }
+
+    /**
+     * 跳转编辑页面
+     */
+    @GetMapping("/admin/page/edit/{id}")
+    public String editPage(@PathVariable Long id, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        if (!isLoggedIn(session) || !isAdmin(session)) {
+            return "redirect:/";
+        }
+
+        Optional<Page> pageOpt = pageRepository.findById(id);
+        if (pageOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "页面不存在");
+            return "redirect:/admin/permissions";
+        }
+
+        Page page = pageOpt.get();
+        if (Boolean.TRUE.equals(page.getIsSystem())) {
+            redirectAttributes.addFlashAttribute("error", "系统页面不可编辑");
+            return "redirect:/admin/permissions";
+        }
+
+        model.addAttribute("page", page);
+        return "admin/pageForm";
+    }
+
+    /**
+     * 保存编辑后的页面
+     */
+    @PostMapping("/admin/page/update")
+    public String updatePage(
+            @RequestParam("id") Long id,
+            @RequestParam("name") String name,
+            @RequestParam("path") String path,
+            @RequestParam(value = "sortOrder", defaultValue = "99") Integer sortOrder,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        if (!isLoggedIn(session) || !isAdmin(session)) {
+            return "redirect:/";
+        }
+
+        Optional<Page> pageOpt = pageRepository.findById(id);
+        if (pageOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "页面不存在");
+            return "redirect:/admin/permissions";
+        }
+
+        Page page = pageOpt.get();
+        if (Boolean.TRUE.equals(page.getIsSystem())) {
+            redirectAttributes.addFlashAttribute("error", "系统页面不可编辑");
+            return "redirect:/admin/permissions";
+        }
+
+        // 检查路径冲突（排除自身）
+        if (!page.getPath().equals(path) && pageRepository.existsByPath(path)) {
+            redirectAttributes.addFlashAttribute("error", "页面路径已存在");
+            return "redirect:/admin/permissions";
+        }
+
+        page.setName(name);
+        page.setPath(path);
+        page.setSortOrder(sortOrder);
+        pageRepository.save(page);
+        redirectAttributes.addFlashAttribute("success", "页面 '" + name + "' 更新成功");
         return "redirect:/admin/permissions";
     }
 }
