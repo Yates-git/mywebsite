@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  * - @Column          : 指定数据库列名和属性
  */
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     // -------------------- 数据库字段 --------------------
