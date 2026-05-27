@@ -7,3 +7,7 @@ target/
 
 #忽略数据库数据更新，只使用初始数据，本地数据不上传、不同步
 mywebsite.db
+
+#忽略运行文件
+mywebsite.db-wal
+mywebsite.db-shm

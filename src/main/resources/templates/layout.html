@@ -370,8 +370,8 @@
                     </a>
                 </div>
 
-                <!-- 后台管理（可展开） -->
-                <div class="nav-item">
+                <!-- 后台管理（可展开）- 仅管理员可见 -->
+                <div class="nav-item" th:if="${isAdmin == true}">
                     <a class="nav-link" th:classappend="${currentPage == 'users' or currentPage == 'groups' or currentPage == 'permissions'} ? 'active' : ''" onclick="toggleSubmenu('admin-submenu', this)">
                         <span class="icon">⚙️</span>
                         <span class="text">后台管理</span>
