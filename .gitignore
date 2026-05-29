@@ -11,3 +11,6 @@ mywebsite.db
 #忽略运行文件
 mywebsite.db-wal
 mywebsite.db-shm
+
+过滤claude
+.claude
