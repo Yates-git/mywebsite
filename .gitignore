@@ -12,5 +12,5 @@ mywebsite.db
 mywebsite.db-wal
 mywebsite.db-shm
 
-过滤claude
+#过滤claude
 .claude
