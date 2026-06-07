@@ -40,8 +40,10 @@
                             <button type="button" class="btn btn-primary btn-sm"
                                 th:attr="data-id=${group.id}, data-name=${group.name}, data-desc=${group.description != null ? group.description : ''}"
                                 onclick="showEditModal(this)">✏️ 编辑</button>
-                            <a th:href="@{/admin/group/delete/{id}(id=${group.id})}" class="btn btn-danger btn-sm"
-                               onclick="return confirm('确定要删除该分组吗？')">🗑️ 删除</a>
+                            <form th:action="@{/admin/group/delete/{id}(id=${group.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('确定要删除该分组吗？')">🗑️ 删除</button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(groups)}">

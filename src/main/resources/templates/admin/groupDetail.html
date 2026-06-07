@@ -65,9 +65,10 @@
                             <span class="role-tag user" th:if="${user.isAdmin == 0}">普通用户</span>
                         </td>
                         <td>
-                            <a th:href="@{/admin/group/{groupId}/removeUser/{userId}(groupId=${group.id}, userId=${user.id})}"
-                               class="btn btn-danger btn-sm"
-                               onclick="return confirm('确定要将该用户移出分组吗？')">移出分组</a>
+                            <form th:action="@{/admin/group/{groupId}/removeUser/{userId}(groupId=${group.id}, userId=${user.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('确定要将该用户移出分组吗？')">移出分组</button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(members)}">

@@ -58,9 +58,11 @@
                         <td>
                             <div class="action-btns">
                                 <a th:href="@{/admin/user/edit/{id}(id=${user.id})}" class="btn btn-secondary btn-sm">编辑</a>
-                                <a th:href="@{/admin/user/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm"
-                                   th:text="${user.isDeleted == 0} ? '禁用' : '恢复'"
-                                   onclick="return confirm(this.textContent === '禁用' ? '确定要禁用该用户吗？' : '确定要恢复该用户吗？')">禁用</a>
+                                <form th:action="@{/admin/user/delete/{id}(id=${user.id})}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            th:text="${user.isDeleted == 0} ? '禁用' : '恢复'"
+                                            onclick="return confirm(this.textContent === '禁用' ? '确定要禁用该用户吗？' : '确定要恢复该用户吗？')">禁用</button>
+                                </form>
                             </div>
                         </td>
                     </tr>

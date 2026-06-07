@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +11,7 @@ import java.util.stream.Collectors;
  * PermissionService.java - 权限服务
  */
 @Service
+@Transactional(readOnly = true) // 类级只读事务，写方法通过 @Transactional 覆盖
 public class PermissionService {
 
     @Autowired
@@ -78,6 +78,9 @@ public class PermissionService {
     /**
      * 检查用户是否有权限访问某个页面
      * 管理员始终有权限
+     *
+     * 优化前：循环每个 groupId 调 existsByGroupIdAndPageId（最多 N 次 SQL）
+     * 优化后：单次 existsByGroupIdInAndPageId（1 次 SQL）
      */
     public boolean hasPagePermission(Long userId, Integer isAdmin, String pagePath) {
         // 管理员有所有权限
@@ -110,24 +113,13 @@ public class PermissionService {
         }
         Long pageId = pageOpt.get().getId();
 
-        // 检查是否有分组拥有该页面的权限
-        for (Long groupId : groupIds) {
-            if (groupPermissionRepository.existsByGroupIdAndPageId(groupId, pageId)) {
-                return true;
-            }
+        // 单次 exists：任一分组拥有该页面权限即放行
+        if (groupPermissionRepository.existsByGroupIdInAndPageId(groupIds, pageId)) {
+            return true;
         }
 
         // 默认只能访问首页
         return "/main".equals(pagePath);
-    }
-
-    /**
-     * 删除页面时同时删除相关权限
-     */
-    @Transactional
-    public void deletePage(Long pageId) {
-        groupPermissionRepository.deleteByPageId(pageId);
-        pageRepository.deleteById(pageId);
     }
 
     /**

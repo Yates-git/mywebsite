@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
  * 用于将用户划分到不同的组中，实现分组管理和权限控制
  */
 @Entity
-@Table(name = "user_group")
+@Table(name = "user_group", indexes = {
+    // 唯一索引：分组名称不可重复
+    @Index(name = "idx_group_name", columnList = "name", unique = true)
+})
 public class Group {
 
     @Id

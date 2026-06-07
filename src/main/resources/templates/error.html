@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${status} + ' - 错误'">错误</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <style>
+        .error-container {
+            max-width: 600px;
+            margin: 80px auto;
+            text-align: center;
+            background: var(--bg-card);
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-card);
+        }
+        .error-code {
+            font-size: 96px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 20px;
+        }
+        .error-message {
+            font-size: 20px;
+            color: var(--text-primary);
+            margin-bottom: 30px;
+        }
+        .error-back {
+            display: inline-block;
+            padding: 10px 24px;
+            background: var(--btn-primary);
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+        .error-back:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code" th:text="${status} ?: '500'">500</div>
+        <div class="error-message" th:text="${error} ?: '出错了'">出错了</div>
+        <a th:href="@{/main}" class="error-back">返回首页</a>
+    </div>
+</body>
+</html>

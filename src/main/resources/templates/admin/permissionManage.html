@@ -48,7 +48,9 @@
                         </td>
                         <td>
                             <a th:if="${!page.isSystem}" th:href="@{/admin/page/edit/{id}(id=${page.id})}" class="btn btn-secondary btn-sm">编辑</a>
-                            <a th:if="${!page.isSystem}" th:href="@{/admin/page/delete/{id}(id=${page.id})}" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除该页面吗？')">删除</a>
+                            <form th:if="${!page.isSystem}" th:action="@{/admin/page/delete/{id}(id=${page.id})}" method="post" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定要删除该页面吗？')">删除</button>
+                            </form>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(pages)}">

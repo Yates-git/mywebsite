@@ -8,7 +8,12 @@ import jakarta.persistence.*;
  * 记录用户与分组的关联关系（多对多）
  */
 @Entity
-@Table(name = "user_user_group")
+@Table(name = "user_user_group", indexes = {
+    // 复合唯一索引：同一用户在同一分组中只能存在一条
+    @Index(name = "idx_ug_user_group", columnList = "user_id, group_id", unique = true),
+    // 反向索引：按分组 ID 查找成员
+    @Index(name = "idx_ug_group_user", columnList = "group_id, user_id")
+})
 public class UserGroup {
 
     @Id

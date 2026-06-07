@@ -14,14 +14,7 @@ spring.thymeleaf.prefix=classpath:/templates/
 # 模板文件后缀
 spring.thymeleaf.suffix=.html
 
-# 模板模式：HTML
-spring.thymeleaf.mode=HTML
-
-# 模板编码
-spring.thymeleaf.encoding=UTF-8
-
 # 开发模式下关闭模板缓存，修改 HTML 后直接生效
-# 生产环境应改为 true
 spring.thymeleaf.cache=false
 
 # -------------------- 请求配置 --------------------
@@ -34,18 +27,13 @@ server.servlet.encoding.force=true
 # 静态资源（CSS、JS、图片）存放位置
 spring.web.resources.static-locations=classpath:/static/
 
-# 静态资源浏览器缓存 30 天
-spring.web.resources.cache.cachecontrol.max-age=2592000
-spring.web.resources.cache.cachecontrol.cache-public=true
-
 # -------------------- 会话配置 --------------------
 # session 过期时间（秒），这里设为 30 分钟
 server.servlet.session.timeout=30m
 
 # -------------------- SQLite 数据库配置 --------------------
-# 数据源改为文件型 SQLite，数据持久化到 ./data/mywebsite.db
-# 修复前：jdbc:sqlite::memory:（重启即丢数据）
-spring.datasource.url=jdbc:sqlite:./data/mywebsite.db
+# 数据库文件路径（项目根目录）
+spring.datasource.url=jdbc:sqlite::memory:
 # 驱动类名
 spring.datasource.driver-class-name=org.sqlite.JDBC
 # 用户名（SQLite 不需要）
@@ -53,30 +41,12 @@ spring.datasource.username=
 # 密码（SQLite 不需要）
 spring.datasource.password=
 
-# -------------------- HikariCP 连接池配置 --------------------
-# SQLite 适合单写者/多读者，池大小不宜过大
-spring.datasource.hikari.maximum-pool-size=10
-spring.datasource.hikari.minimum-idle=2
-spring.datasource.hikari.idle-timeout=30000
-spring.datasource.hikari.connection-timeout=30000
-spring.datasource.hikari.pool-name=MyWebsiteHikariPool
-
 # -------------------- JPA 配置 --------------------
 # 自动建表（update: 有表则更新，无表则创建）
 spring.jpa.hibernate.ddl-auto=update
-# 关闭 SQL 打印（生产环境；如需调试可临时改为 true）
-spring.jpa.show-sql=false
+# 显示 SQL 语句（方便调试）
+spring.jpa.show-sql=true
 # SQL 方言（SQLite 需要使用 SQLite 方言）
 spring.jpa.properties.hibernate.dialect=org.hibernate.community.dialect.SQLiteDialect
 # 格式化 SQL
 spring.jpa.properties.hibernate.format_sql=true
-# 启用批量参数绑定，减少 round-trip
-spring.jpa.properties.hibernate.jdbc.batch_size=30
-spring.jpa.properties.hibernate.order_inserts=true
-spring.jpa.properties.hibernate.order_updates=true
-
-# -------------------- 日志配置 --------------------
-# 日志输出到控制台和 ./logs/mywebsite.log
-logging.level.root=INFO
-logging.level.com.example.mywebsite=INFO
-logging.file.name=./logs/mywebsite.log

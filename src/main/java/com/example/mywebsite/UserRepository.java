@@ -1,8 +1,12 @@
 package com.example.mywebsite;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -39,4 +43,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return 找到返回 Optional<User>，找不到返回空
      */
     Optional<User> findByUsernameAndIsDeleted(String username, Integer isDeleted);
+
+    /**
+     * 批量查询：返回 ID 不在指定集合中的用户
+     * 用于"不在某分组中的用户"等 NOT IN 场景，避免拉全表
+     */
+    @Query("SELECT u FROM User u WHERE u.id NOT IN :ids")
+    List<User> findByIdNotIn(@Param("ids") Collection<Long> ids);
 }

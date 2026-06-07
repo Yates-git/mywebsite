@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -25,6 +26,12 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
     List<UserGroup> findByGroupId(Long groupId);
 
     /**
+     * 批量查询：一次拉取多个用户的所有分组关联
+     * 用于避免 N+1（按用户循环单查）
+     */
+    List<UserGroup> findAllByUserIdIn(Collection<Long> userIds);
+
+    /**
      * 检查用户是否在某分组中
      */
     boolean existsByUserIdAndGroupId(Long userId, Long groupId);
@@ -42,4 +49,12 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
     @Modifying
     @Query("DELETE FROM UserGroup ug WHERE ug.groupId = :groupId")
     void deleteByGroupId(@Param("groupId") Long groupId);
+
+    /**
+     * 按用户 + 分组直接删除单条关联（带返回影响行数）
+     * 用于避免先 fetch 再判断再 delete 的 N+1
+     */
+    @Modifying
+    @Query("DELETE FROM UserGroup ug WHERE ug.userId = :userId AND ug.groupId = :groupId")
+    int deleteByUserIdAndGroupId(@Param("userId") Long userId, @Param("groupId") Long groupId);
 }

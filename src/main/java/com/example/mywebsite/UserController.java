@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import com.example.mywebsite.User;
-import com.example.mywebsite.Group;
 
 /**
  * Controller.java - 控制器
@@ -52,7 +51,10 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
-    private GroupService groupService;
+    private UserGroupRepository userGroupRepository;
+
+    @Autowired
+    private GroupRepository groupRepository;
 
     /**
      * 首页/登录页 - 处理 GET 请求
@@ -198,12 +200,31 @@ public class UserController {
         // 获取所有用户（包括已删除的）
         List<User> users = userRepository.findAll();
 
-        // 获取每个用户所属的分组（userId -> 分组名称列表）
+        // N+1 修复：批量化"用户-分组"查询
+        // 优化前：对每个用户调一次 groupService.getUserGroups(userId)（1 + N 次 SQL）
+        // 优化后：1 次拉取所有用户，再 1 次 IN 查询所有 UserGroup，再 1 次 IN 查询所有 Group
+        List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+        List<UserGroup> allUserGroups = userIds.isEmpty()
+                ? java.util.Collections.emptyList()
+                : userGroupRepository.findAllByUserIdIn(userIds);
+        List<Long> groupIds = allUserGroups.stream()
+                .map(UserGroup::getGroupId).distinct().collect(Collectors.toList());
+        Map<Long, Group> groupMap = groupIds.isEmpty()
+                ? java.util.Collections.emptyMap()
+                : groupRepository.findAllById(groupIds).stream()
+                        .collect(Collectors.toMap(Group::getId, g -> g));
+
+        // 组装 userId -> [groupName]
+        // 预填空列表：未关联任何分组的用户在模板中调用 .size() 不会 NPE
         Map<Long, List<String>> userGroupsMap = new HashMap<>();
-        for (User user : users) {
-            List<Group> groups = groupService.getUserGroups(user.getId());
-            List<String> groupNames = groups.stream().map(Group::getName).collect(Collectors.toList());
-            userGroupsMap.put(user.getId(), groupNames);
+        for (User u : users) {
+            userGroupsMap.put(u.getId(), new java.util.ArrayList<>());
+        }
+        for (UserGroup ug : allUserGroups) {
+            Group g = groupMap.get(ug.getGroupId());
+            if (g != null) {
+                userGroupsMap.get(ug.getUserId()).add(g.getName());
+            }
         }
 
         // 传递数据给页面
@@ -296,6 +317,7 @@ public class UserController {
      * @return 重定向到用户管理页面或返回表单页面
      */
     @PostMapping("/admin/user/save")
+    @Transactional
     public String userSave(
             @RequestParam("username") String username,
             @RequestParam("password") String password,
@@ -365,12 +387,12 @@ public class UserController {
      * @return 重定向到用户管理页面
      */
     @PostMapping("/admin/user/update")
+    @Transactional
     public String userUpdate(
             @RequestParam("id") Long id,
             @RequestParam(value = "password", required = false) String password,
             @RequestParam(value = "isAdmin", defaultValue = "0") Integer isAdmin,
             @RequestParam(value = "isDeleted", defaultValue = "0") Integer isDeleted,
-            @RequestParam("createdAt") LocalDateTime createdAt,
             HttpSession session) {
 
         // 检查是否已登录
@@ -398,7 +420,7 @@ public class UserController {
         }
         user.setIsAdmin(isAdmin);
         user.setIsDeleted(isDeleted);
-        user.setCreatedAt(createdAt);
+        // createdAt 由 @PrePersist / @PreUpdate 自动管理，不接受客户端传值（Mass Assignment 修复）
         user.setUpdatedAt(LocalDateTime.now());
 
         // 保存到数据库
@@ -409,13 +431,14 @@ public class UserController {
     }
 
     /**
-     * 删除/恢复用户 - 处理 GET 请求（软删除）
+     * 删除/恢复用户 - 处理 POST 请求（软删除）
      *
      * @param id      用户ID
      * @param session 会话对象
      * @return 重定向到用户管理页面
      */
-    @GetMapping("/admin/user/delete/{id}")
+    @PostMapping("/admin/user/delete/{id}")
+    @Transactional
     public String userDelete(@PathVariable Long id, HttpSession session) {
         // 检查是否已登录
         if (session.getAttribute("loginUser") == null) {
@@ -447,14 +470,15 @@ public class UserController {
     }
 
     /**
-     * 重置用户密码 - 处理 GET 请求
+     * 重置用户密码 - 处理 POST 请求
      * 将密码重置为 123456
      *
      * @param id      用户ID
      * @param session 会话对象
      * @return 重定向到用户管理页面
      */
-    @GetMapping("/admin/user/reset/{id}")
+    @PostMapping("/admin/user/reset/{id}")
+    @Transactional
     public String userResetPassword(@PathVariable Long id, HttpSession session) {
         // 检查是否已登录
         if (session.getAttribute("loginUser") == null) {

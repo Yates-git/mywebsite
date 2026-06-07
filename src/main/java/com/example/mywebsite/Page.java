@@ -10,7 +10,10 @@ import java.time.LocalDateTime;
  * 注意：后台管理页面不在此表中，只有管理员可以访问
  */
 @Entity
-@Table(name = "page")
+@Table(name = "page", indexes = {
+    // 唯一索引：页面路径不可重复（权限匹配按 path 查找）
+    @Index(name = "idx_page_path", columnList = "path", unique = true)
+})
 public class Page {
 
     @Id

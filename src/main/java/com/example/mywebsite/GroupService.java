@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
  * GroupService.java - 分组服务
  */
 @Service
+@Transactional(readOnly = true) // 类级只读事务，写方法通过 @Transactional 覆盖
 public class GroupService {
 
     @Autowired
@@ -92,20 +93,6 @@ public class GroupService {
     }
 
     /**
-     * 设置用户所属的分组
-     */
-    @Transactional
-    public void setUserGroups(Long userId, List<Long> groupIds) {
-        // 删除用户现有的分组关联
-        userGroupRepository.deleteByUserId(userId);
-        // 创建新的分组关联
-        for (Long groupId : groupIds) {
-            UserGroup ug = new UserGroup(userId, groupId);
-            userGroupRepository.save(ug);
-        }
-    }
-
-    /**
      * 获取分组的所有用户
      */
     public List<User> getGroupUsers(Long groupId) {
@@ -118,17 +105,19 @@ public class GroupService {
 
     /**
      * 获取不在某个分组中的所有用户（用于添加用户到分组）
+     *
+     * 优化前：拉全表 User 再内存过滤
+     * 优化后：NOT IN 一次 SQL 搞定
      */
     public List<User> getUsersNotInGroup(Long groupId) {
         List<UserGroup> userGroups = userGroupRepository.findByGroupId(groupId);
         List<Long> existingUserIds = userGroups.stream()
                 .map(UserGroup::getUserId)
                 .collect(Collectors.toList());
-        
-        List<User> allUsers = userRepository.findAll();
-        return allUsers.stream()
-                .filter(u -> !existingUserIds.contains(u.getId()))
-                .collect(Collectors.toList());
+        if (existingUserIds.isEmpty()) {
+            return userRepository.findAll();
+        }
+        return userRepository.findByIdNotIn(existingUserIds);
     }
 
     /**
@@ -149,16 +138,13 @@ public class GroupService {
 
     /**
      * 从分组移除用户
+     *
+     * 优化前：fetch 该用户所有 UserGroup，循环找匹配再删除
+     * 优化后：直接 DELETE WHERE user_id=? AND group_id=? 看影响行数
      */
     @Transactional
     public boolean removeUserFromGroup(Long userId, Long groupId) {
-        List<UserGroup> userGroups = userGroupRepository.findByUserId(userId);
-        for (UserGroup ug : userGroups) {
-            if (ug.getGroupId().equals(groupId)) {
-                userGroupRepository.delete(ug);
-                return true;
-            }
-        }
-        return false;
+        int affected = userGroupRepository.deleteByUserIdAndGroupId(userId, groupId);
+        return affected > 0;
     }
 }

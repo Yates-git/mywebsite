@@ -2,6 +2,7 @@ package com.example.mywebsite;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -59,6 +60,7 @@ public class GroupController {
      * 创建分组
      */
     @PostMapping("/admin/group/create")
+    @Transactional
     public String createGroup(
             @RequestParam("name") String name,
             @RequestParam(value = "description", required = false) String description,
@@ -82,7 +84,8 @@ public class GroupController {
     /**
      * 删除分组
      */
-    @GetMapping("/admin/group/delete/{id}")
+    @PostMapping("/admin/group/delete/{id}")
+    @Transactional
     public String deleteGroup(
             @PathVariable Long id,
             HttpSession session,
@@ -106,6 +109,7 @@ public class GroupController {
      * 更新分组
      */
     @PostMapping("/admin/group/update")
+    @Transactional
     public String updateGroup(
             @RequestParam("id") Long id,
             @RequestParam("name") String name,
@@ -180,7 +184,7 @@ public class GroupController {
     /**
      * 从分组移除用户
      */
-    @GetMapping("/admin/group/{groupId}/removeUser/{userId}")
+    @PostMapping("/admin/group/{groupId}/removeUser/{userId}")
     public String removeUserFromGroup(
             @PathVariable Long groupId,
             @PathVariable Long userId,

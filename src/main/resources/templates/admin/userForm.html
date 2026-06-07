@@ -15,7 +15,7 @@
 
             <form th:action="${user == null or user?.id == null} ? @{/admin/user/save} : @{/admin/user/update}" th:object="${user}" method="post">
                 <input type="hidden" th:if="${user != null and user?.id != null}" th:field="*{id}" />
-                <input type="hidden" th:if="${user != null and user?.id != null}" th:field="*{createdAt}" />
+                <!-- 注：createdAt 不可由客户端传值（Mass Assignment 修复） -->
 
                 <!-- 用户名 -->
                 <div class="form-group">

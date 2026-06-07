@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -28,6 +29,12 @@ public interface GroupPermissionRepository extends JpaRepository<GroupPermission
      * 检查某个分组是否有某个页面的权限
      */
     boolean existsByGroupIdAndPageId(Long groupId, Long pageId);
+
+    /**
+     * 批量检查：任一指定分组是否拥有该页面权限
+     * 用于避免按分组循环单查的 N+1
+     */
+    boolean existsByGroupIdInAndPageId(Collection<Long> groupIds, Long pageId);
 
     /**
      * 删除分组的所有权限

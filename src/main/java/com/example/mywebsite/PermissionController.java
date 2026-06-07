@@ -2,11 +2,13 @@ package com.example.mywebsite;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +91,7 @@ public class PermissionController {
      * 更新分组权限
      */
     @PostMapping("/admin/permission/update")
+    @Transactional
     public String updatePermission(
             @RequestParam("groupId") Long groupId,
             @RequestParam(value = "pageIds", required = false) List<Long> pageIds,
@@ -99,17 +102,15 @@ public class PermissionController {
             return "redirect:/";
         }
 
-        if (pageIds == null) {
-            pageIds = List.of();
-        }
-
-        // 确保首页权限始终被包含
+        // 必须使用可变集合，因为下面会 add()，List.of() 是不可变的
+        // 修复前：pageIds.add(...) 在 pageIds 为 List.of() 时抛 UnsupportedOperationException
+        List<Long> mutablePageIds = pageIds == null ? new ArrayList<>() : new ArrayList<>(pageIds);
         Page mainPage = pageRepository.findByPath("/main").orElse(null);
-        if (mainPage != null && !pageIds.contains(mainPage.getId())) {
-            pageIds.add(mainPage.getId());
+        if (mainPage != null && !mutablePageIds.contains(mainPage.getId())) {
+            mutablePageIds.add(mainPage.getId());
         }
 
-        permissionService.setGroupPermissions(groupId, pageIds);
+        permissionService.setGroupPermissions(groupId, mutablePageIds);
         redirectAttributes.addFlashAttribute("success", "权限更新成功");
 
         return "redirect:/admin/permissions";
@@ -119,6 +120,7 @@ public class PermissionController {
      * 添加新页面（系统管理员手动添加新的页面配置）
      */
     @PostMapping("/admin/page/add")
+    @Transactional
     public String addPage(
             @RequestParam("name") String name,
             @RequestParam("path") String path,
@@ -149,7 +151,8 @@ public class PermissionController {
     /**
      * 删除页面
      */
-    @GetMapping("/admin/page/delete/{id}")
+    @PostMapping("/admin/page/delete/{id}")
+    @Transactional
     public String deletePage(@PathVariable Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         if (!isLoggedIn(session) || !isAdmin(session)) {
             return "redirect:/";
@@ -203,6 +206,7 @@ public class PermissionController {
      * 保存编辑后的页面
      */
     @PostMapping("/admin/page/update")
+    @Transactional
     public String updatePage(
             @RequestParam("id") Long id,
             @RequestParam("name") String name,

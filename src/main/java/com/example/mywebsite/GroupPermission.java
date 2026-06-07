@@ -8,7 +8,12 @@ import jakarta.persistence.*;
  * 记录每个分组可以访问的页面（多对多关系）
  */
 @Entity
-@Table(name = "group_permission")
+@Table(name = "group_permission", indexes = {
+    // 复合唯一索引：同一分组对同一页面只能有一条权限记录
+    @Index(name = "idx_gp_group_page", columnList = "group_id, page_id", unique = true),
+    // 反向索引：删除页面时按 page_id 清理
+    @Index(name = "idx_gp_page_group", columnList = "page_id, group_id")
+})
 public class GroupPermission {
 
     @Id
